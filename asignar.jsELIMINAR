@@ -1,0 +1,305 @@
+$(document).ready(function () {
+    let adminChildrenCount = 0;
+    let tablaDetalleNinos;
+
+    const tablaAldeas = $('#tabla-aldeas').DataTable({
+        responsive: true,
+        autoWidth: false,
+        pageLength: 10,
+        language: {
+            lengthMenu: "Mostrar _MENU_ registros por página",
+            zeroRecords: "No se encontraron resultados",
+            search: "Buscar:",
+            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            infoEmpty: "No hay registros disponibles",
+            infoFiltered: "(filtrado de _MAX_ registros)",
+            paginate: {
+                first: "Primero",
+                last: "Último",
+                next: "Siguiente",
+                previous: "Anterior"
+            }
+        },
+        columns: [
+            { data: 'aldea' },
+            { data: 'total_ninos' },
+            { data: 'ninos_asignados' },
+            {
+                data: null,
+render: function (data) {
+    return `
+        <div class="btn-group" role="group" aria-label="Acciones">
+            <button class="btn btn-primary btn-sm ver-ninos" data-aldea="${data.aldea}" title="Ver Niños">
+                <i class="fas fa-users"></i>
+            </button>
+            <button class="btn btn-success btn-sm asignar-todos" data-aldea="${data.aldea}" title="Asignar niños">
+                <i class="fas fa-plus"></i> Asignar
+            </button>
+            <button class="btn btn-danger btn-sm liberar-todos" data-aldea="${data.aldea}" title="Liberar niños">
+                <i class="fas fa-minus"></i> Liberar
+            </button>
+        </div>
+    `;
+}            }
+        ]
+    });
+
+function mostrarAlerta(mensaje, tipo = 'success') {
+    const iconos = {
+        success: '✅',
+        warning: '⚠️',
+        danger: '❌'
+    };
+
+    const alerta = `
+        <div class="alert alert-${tipo} alert-dismissible fade show shadow-sm" role="alert">
+            <strong>${iconos[tipo] || ''}</strong> ${mensaje}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>`;
+
+    $("#alertas").html(alerta);
+
+    // 🔥 AUTO-CERRAR ALERTA luego de 5 segundos
+    setTimeout(function () {
+        $(".alert").alert('close');
+    }, 5000);
+}
+    function actualizarContadores() {
+        const seleccionados = $("input[name='ninos[]']:checked").length;
+        $("#contador-seleccionados").text(`Seleccionados: ${seleccionados}`);
+    }
+
+    function cargarDatos() {
+        $.ajax({
+            url: "../Ajax/asignarController.php",
+            type: "POST",
+            data: { accion: "obtener_datos" },
+            dataType: "json",
+            success: function (response) {
+                if (response.gestores) {
+                    let options = `<option value="">Seleccione un administrador</option>`;
+                    response.gestores.forEach(gestor => {
+                        options += `<option value="${gestor.Cedula}" data-nombre="${gestor.nombre_completo}">${gestor.nombre_completo}</option>`;
+                    });
+                    $("#id_gestor").html(options);
+                }
+                if (response.aldeas) {
+                    tablaAldeas.clear().rows.add(response.aldeas).draw();
+                }
+            },
+            error: function () {
+                mostrarAlerta('Error al cargar los datos', 'danger');
+            }
+        });
+    }
+
+    cargarDatos();
+
+    $("#id_gestor").on('change', function () {
+        adminChildrenCount = 0;
+        actualizarContadores();
+    });
+
+    // Ver niños de una aldea
+    $('#tabla-aldeas').on('click', '.ver-ninos', function () {
+        const aldea = $(this).data('aldea');
+        const idGestor = $("#id_gestor").val();
+        const nombreGestor = $("#id_gestor option:selected").data('nombre');
+
+        if (!idGestor) {
+            mostrarAlerta('Debe seleccionar un administrador', 'warning');
+            return;
+        }
+
+        $('#nombre-aldea').text(aldea);
+        $('#admin-selected').text(nombreGestor);
+
+        $.ajax({
+            url: "../Ajax/asignarController.php",
+            type: "POST",
+            data: { accion: "obtener_ninos_aldea", aldea },
+            dataType: "json",
+            success: function (response) {
+                if ($.fn.DataTable.isDataTable('#tabla-lista-ninos')) {
+                    tablaDetalleNinos.destroy();
+                }
+
+                let html = '';
+                response.ninos.forEach(n => {
+                    const checked = n.esta_asignado ? 'checked' : '';
+                    html += `
+                        <tr>
+                            <td><input type="checkbox" name="ninos[]" value="${n.numero_nino}" ${checked}></td>
+                            <td>${n.numero_nino || 'Sin número'}</td>
+                            <td>${n.nombre_completo}</td>
+                            <td>${n.esta_asignado ? 'Asignado' : 'Disponible'}</td>
+                        </tr>`;
+                });
+                $("#lista-ninos").html(html);
+
+                tablaDetalleNinos = $('#tabla-lista-ninos').DataTable({
+                    paging: true,
+                    searching: true,
+                    responsive: true,
+                    pageLength: 10,
+                    ordering: false,
+                    destroy: true,
+                    language: {
+                        lengthMenu: "Mostrar _MENU_ registros por página",
+                        search: "Buscar:",
+                        zeroRecords: "No se encontraron niños",
+                        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                        infoEmpty: "No hay registros disponibles",
+                        infoFiltered: "(filtrado de _MAX_ registros)",
+                        paginate: {
+                            first: "Primero",
+                            last: "Último",
+                            next: "Siguiente",
+                            previous: "Anterior"
+                        }
+                    }
+                });
+
+                actualizarContadores();
+                $("#modal-ninos").modal('show');
+            },
+            error: function () {
+                mostrarAlerta('Error al cargar los niños', 'danger');
+            }
+        });
+    });
+
+    // Asignar todos los niños de una aldea
+    $('#tabla-aldeas').on('click', '.asignar-todos', function () {
+        const aldea = $(this).data('aldea');
+        const idGestor = $("#id_gestor").val();
+
+        if (!idGestor) {
+            mostrarAlerta('Debe seleccionar un administrador', 'warning');
+            return;
+        }
+
+        if (confirm(`¿Está seguro de asignar todos los niños de ${aldea} al administrador seleccionado?`)) {
+            $.ajax({
+                url: "../Ajax/asignarController.php",
+                type: "POST",
+                data: {
+                    accion: "asignar_todos_aldea",
+                    aldea: aldea,
+                    id_gestor: idGestor
+                },
+                dataType: "json",
+                success: function (res) {
+                    if (res.exito) {
+                        mostrarAlerta('Niños asignados exitosamente');
+                        cargarDatos();
+                    } else {
+                        mostrarAlerta(res.mensaje || 'Error al asignar niños', 'danger');
+                    }
+                },
+                error: function () {
+                    mostrarAlerta('Error interno al asignar niños', 'danger');
+                }
+            });
+        }
+    });
+
+    // Liberar todos los niños de una aldea
+    $('#tabla-aldeas').on('click', '.liberar-todos', function () {
+        const aldea = $(this).data('aldea');
+
+        if (confirm(`¿Está seguro de liberar todos los niños asignados de ${aldea}?`)) {
+            $.ajax({
+                url: "../Ajax/asignarController.php",
+                type: "POST",
+                data: {
+                    accion: "liberar_todos_aldea",
+                    aldea: aldea
+                },
+                dataType: "json",
+                success: function (res) {
+                    if (res.exito) {
+                        mostrarAlerta('Niños liberados exitosamente');
+                        cargarDatos();
+                    } else {
+                        mostrarAlerta(res.mensaje || 'Error al liberar niños', 'danger');
+                    }
+                },
+                error: function () {
+                    mostrarAlerta('Error interno al liberar niños', 'danger');
+                }
+            });
+        }
+    });
+
+    $("#btn-guardar-asignacion").click(function () {
+        const idGestor = $("#id_gestor").val();
+        const seleccionados = $("input[name='ninos[]']:checked").map(function () {
+            return this.value;
+        }).get();
+
+        if (seleccionados.length === 0) {
+            mostrarAlerta('Debe seleccionar al menos un niño', 'warning');
+            return;
+        }
+
+        $.ajax({
+            url: "../Ajax/asignarController.php",
+            type: "POST",
+            data: {
+                accion: "asignar_multiple",
+                id_gestor: idGestor,
+                ninos: seleccionados
+            },
+            dataType: "json",
+            success: function (res) {
+                if (res.exito) {
+                    $("#modal-ninos").modal('hide');
+                    mostrarAlerta('Asignación realizada exitosamente');
+                    cargarDatos();
+                } else {
+                    mostrarAlerta(res.mensaje || 'Error al asignar niños', 'danger');
+                }
+            },
+            error: function () {
+                mostrarAlerta('Error interno al asignar', 'danger');
+            }
+        });
+    });
+
+    $("#btn-liberar-asignacion").click(function () {
+        const seleccionados = $("input[name='ninos[]']:checked").map(function () {
+            return this.value;
+        }).get();
+
+        if (seleccionados.length === 0) {
+            mostrarAlerta('Debe seleccionar al menos un niño para liberar', 'warning');
+            return;
+        }
+
+        $.ajax({
+            url: "../Ajax/asignarController.php",
+            type: "POST",
+            data: {
+                accion: "liberar_multiple",
+                ninos: seleccionados
+            },
+            dataType: "json",
+            success: function (res) {
+                if (res.exito) {
+                    $("#modal-ninos").modal('hide');
+                    mostrarAlerta('Niños liberados exitosamente');
+                    cargarDatos();
+                } else {
+                    mostrarAlerta(res.mensaje || 'Error al liberar niños', 'danger');
+                }
+            },
+            error: function () {
+                mostrarAlerta('Error interno al liberar', 'danger');
+            }
+        });
+    });
+
+});

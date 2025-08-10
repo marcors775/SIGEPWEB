@@ -1,0 +1,179 @@
+<?php
+// Archivo: Ajax/asignarController.php (ACTUALIZADO COMPLETO)
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once "../Modelo/asignarAModelo.php";
+require_once "../Modelo/asignarNiModelo.php";
+
+header('Content-Type: application/json');
+
+function responder($data, $codigo = 200) {
+    http_response_code($codigo);
+    echo json_encode($data);
+    exit;
+}
+
+try {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        responder(['error' => 'Método no permitido'], 405);
+    }
+
+    if (!isset($_POST['accion'])) {
+        responder(['error' => 'Acción no especificada'], 400);
+    }
+
+    $accion = $_POST['accion'];
+
+    switch ($accion) {
+        case 'obtener_datos':
+            $gestores = Gestor::obtenerAdministradores();
+            $aldeas = Nino::obtenerResumenAldeas();
+
+            if ($gestores === false || $aldeas === false) {
+                responder(['error' => 'Error al obtener datos'], 500);
+            }
+
+            responder(['gestores' => $gestores, 'aldeas' => $aldeas]);
+            break;
+
+        case 'obtener_ninos_aldea':
+            if (empty($_POST['aldea'])) {
+                responder(['error' => 'Aldea no especificada'], 400);
+            }
+
+            $aldea = $_POST['aldea'];
+            $ninos = Nino::obtenerNinosPorAldea($aldea);
+
+            if ($ninos === false) {
+                responder(['error' => 'Error al obtener niños de la aldea'], 500);
+            }
+
+            responder(['ninos' => $ninos]);
+            break;
+
+        case 'obtener_ninos_asignados':
+            if (empty($_POST['id_gestor'])) {
+                responder(['error' => 'ID de gestor no especificado'], 400);
+            }
+
+            $id_gestor = (int)$_POST['id_gestor'];
+            $total = Nino::obtenerNinosAsignados($id_gestor);
+
+            if ($total === false) {
+                responder(['error' => 'Error al obtener conteo de niños asignados'], 500);
+            }
+
+            responder($total);
+            break;
+
+        case 'asignar_multiple':
+            if (empty($_POST['id_gestor']) || empty($_POST['ninos']) || !is_array($_POST['ninos'])) {
+                responder(['error' => 'Datos incompletos para asignar'], 400);
+            }
+
+            $id_gestor = (int)$_POST['id_gestor'];
+            $ninos = $_POST['ninos'];
+
+            $resultado = Nino::asignarMultiplesNinos($ninos, $id_gestor);
+
+            if ($resultado === false) {
+                responder(['exito' => false, 'mensaje' => 'Error al realizar la asignación'], 500);
+            }
+
+            responder(['exito' => true, 'mensaje' => 'Asignación realizada exitosamente']);
+            break;
+
+        case 'liberar_multiple':
+            if (empty($_POST['ninos']) || !is_array($_POST['ninos'])) {
+                responder(['error' => 'Datos incompletos para liberar'], 400);
+            }
+
+            $ninos = $_POST['ninos'];
+
+            $resultado = Nino::liberarMultiplesNinos($ninos);
+
+            if ($resultado === false) {
+                responder(['exito' => false, 'mensaje' => 'Error al liberar niños'], 500);
+            }
+
+            responder(['exito' => true, 'mensaje' => 'Liberación realizada exitosamente']);
+            break;
+
+        // 🚀 NUEVOS CASES AGREGADOS:
+
+        case 'asignar_todos_aldea':
+            if (empty($_POST['aldea']) || empty($_POST['id_gestor'])) {
+                responder(['error' => 'Datos incompletos para asignar todos'], 400);
+            }
+
+            $aldea = $_POST['aldea'];
+            $id_gestor = (int)$_POST['id_gestor'];
+
+            $ninos = Nino::obtenerNinosPorAldea($aldea);
+
+            if ($ninos === false) {
+                responder(['error' => 'Error al obtener niños de la aldea'], 500);
+            }
+
+            $ninos_disponibles = array_filter($ninos, function($n) {
+                return !$n['esta_asignado'];
+            });
+
+            $numeros_ninos = array_column($ninos_disponibles, 'numero_nino');
+
+            if (empty($numeros_ninos)) {
+                responder(['exito' => false, 'mensaje' => 'No hay niños disponibles para asignar'], 400);
+            }
+
+            $resultado = Nino::asignarMultiplesNinos($numeros_ninos, $id_gestor);
+
+            if ($resultado === false) {
+                responder(['exito' => false, 'mensaje' => 'Error al asignar todos los niños'], 500);
+            }
+
+            responder(['exito' => true]);
+            break;
+
+        case 'liberar_todos_aldea':
+            if (empty($_POST['aldea'])) {
+                responder(['error' => 'Aldea no especificada'], 400);
+            }
+
+            $aldea = $_POST['aldea'];
+
+            $ninos = Nino::obtenerNinosPorAldea($aldea);
+
+            if ($ninos === false) {
+                responder(['error' => 'Error al obtener niños de la aldea'], 500);
+            }
+
+            $ninos_asignados = array_filter($ninos, function($n) {
+                return $n['esta_asignado'];
+            });
+
+            $numeros_ninos = array_column($ninos_asignados, 'numero_nino');
+
+            if (empty($numeros_ninos)) {
+                responder(['exito' => false, 'mensaje' => 'No hay niños asignados para liberar'], 400);
+            }
+
+            $resultado = Nino::liberarMultiplesNinos($numeros_ninos);
+
+            if ($resultado === false) {
+                responder(['exito' => false, 'mensaje' => 'Error al liberar todos los niños'], 500);
+            }
+
+            responder(['exito' => true]);
+            break;
+
+        default:
+            responder(['error' => 'Acción no válida'], 400);
+    }
+
+} catch (Exception $e) {
+    responder(['error' => 'Error interno', 'mensaje' => $e->getMessage()], 500);
+}
+?>

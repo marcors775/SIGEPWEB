@@ -1,0 +1,213 @@
+Array
+(
+    [0] => Array
+        (
+            [numero_nino] => 845925513
+            [nombre_completo] => Liseth Anahi Farinango Ipiales
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 2019-10-25
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund France
+            [nombre_contacto_principal] => Sylviane LE CANN-OSLER
+        )
+
+    [1] => Array
+        (
+            [numero_nino] => 845925798
+            [nombre_completo] => Sara Jaqueline Ramirez Ipiales
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 2019-10-25
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund US
+            [nombre_contacto_principal] => Matthew VanOverbeke
+        )
+
+    [2] => Array
+        (
+            [numero_nino] => 846621214
+            [nombre_completo] => Aimy Meiling Cuasque Carlosama
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund US
+            [nombre_contacto_principal] => Esgardo Ramirez
+        )
+
+    [3] => Array
+        (
+            [numero_nino] => 846621216
+            [nombre_completo] => Akemi Sarai Serrano Pupiales
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund France
+            [nombre_contacto_principal] => Romain BISSUEL
+        )
+
+    [4] => Array
+        (
+            [numero_nino] => 846621224
+            [nombre_completo] => Andrea Nicole Pupiales Pupiales
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund US
+            [nombre_contacto_principal] => Debbie Contreras
+        )
+
+    [5] => Array
+        (
+            [numero_nino] => 846622312
+            [nombre_completo] => Sumay Wayra Pupiales Cuasque
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 2023-05-04
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund US
+            [nombre_contacto_principal] => Rachael Redford
+        )
+
+    [6] => Array
+        (
+            [numero_nino] => 846622331
+            [nombre_completo] => Yawri Nazim Guatemal Tuquerres
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund US
+            [nombre_contacto_principal] => Melanie Erdner
+        )
+
+    [7] => Array
+        (
+            [numero_nino] => 846739222
+            [nombre_completo] => Javier Efrain Pupiales Pupiales
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund US
+            [nombre_contacto_principal] => Kelly Fitzpatrick
+        )
+
+    [8] => Array
+        (
+            [numero_nino] => 846788816
+            [nombre_completo] => Abraham Benjamin Pupiales Chuquin
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund US
+            [nombre_contacto_principal] => Brandy Richardson
+        )
+
+    [9] => Array
+        (
+            [numero_nino] => 846788948
+            [nombre_completo] => Ashley Domenica Pupiales Pupiales
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Reserved
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => #N/A
+            [nombre_contacto_principal] => #N/A
+        )
+
+    [10] => Array
+        (
+            [numero_nino] => 846789034
+            [nombre_completo] => Marilyn Yarina Tuquerres Pupiales
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund US
+            [nombre_contacto_principal] => Martin Mazzanti
+        )
+
+    [11] => Array
+        (
+            [numero_nino] => 846789039
+            [nombre_completo] => Erick Caleb Ichau Pupiales
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund US
+            [nombre_contacto_principal] => Rocky Fowler
+        )
+
+    [12] => Array
+        (
+            [numero_nino] => 846789234
+            [nombre_completo] => Jenny Jazmin Mugmal Chuquin
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Available
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => #N/A
+            [nombre_contacto_principal] => #N/A
+        )
+
+    [13] => Array
+        (
+            [numero_nino] => 846791095
+            [nombre_completo] => Sarahi Betzabet Guachacal Pavon
+            [village] => 1317-La Esperanza
+            [birthdate] => 
+            [comunidad] => 477
+            [genero] => 
+            [estado_patrocinio] => Sponsored
+            [fecha_inscripcion] => 
+            [socio_local] => FOCI
+            [nombre_alianza] => ChildFund Taiwan
+            [nombre_contacto_principal] => Yu Yu Huang
+        )
+
+)

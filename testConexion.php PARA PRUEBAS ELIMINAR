@@ -1,0 +1,20 @@
+<?php
+session_start();
+require_once "../Modelo/asignarCartasModelo.php";
+
+header('Content-Type: application/json');
+
+try {
+    $test = Cartas::obtenerGestores();
+    echo json_encode([
+        'status' => 'ok',
+        'total_gestores' => count($test),
+        'gestores' => $test
+    ]);
+} catch (Exception $e) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => $e->getMessage()
+    ]);
+}
+?>

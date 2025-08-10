@@ -1,0 +1,41 @@
+<?php
+// 📁 Nuevo archivo: Ajax/asignarGestorNinoController.php
+require_once "../Config/sesion_ajax.php";
+require_once "../Modelo/gestorNinoModel.php";
+
+$modelo = new GestorNinoModel();
+$accion = $_POST['accion'] ?? '';
+
+switch ($accion) {
+    case 'listar_ninos':
+        $village_id = $_POST['village_id'] ?? 0;
+        echo json_encode($modelo->obtenerNinosPorVillage($village_id));
+        break;
+
+    case 'listar_gestores':
+        echo json_encode($modelo->listarGestores());
+        break;
+
+    case 'listar_asignados':
+        $nino_id = $_POST['nino_id'] ?? 0;
+        echo json_encode($modelo->obtenerGestoresPorNino($nino_id));
+        break;
+
+    case 'asignar':
+        $nino_id = $_POST['nino_id'] ?? 0;
+        $gestor_id = $_POST['gestor_id'] ?? 0;
+        $asignado_por = $_SESSION['usu'] ?? 'sistema';
+        echo json_encode(['exito' => $modelo->asignarGestor($gestor_id, $nino_id, $asignado_por)]);
+        break;
+
+    case 'eliminar':
+        $nino_id = $_POST['nino_id'] ?? 0;
+        $gestor_id = $_POST['gestor_id'] ?? 0;
+        echo json_encode(['exito' => $modelo->eliminarAsignacion($gestor_id, $nino_id)]);
+        break;
+
+    default:
+        echo json_encode(['error' => 'Acción no válida']);
+        break;
+}
+?>
